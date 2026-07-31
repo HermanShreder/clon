@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>full here</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, #07111f 0%, #0f172a 45%, #111827 100%);
+      color: #f8fafc;
+      padding: 24px;
+    }
+    .card {
+      width: min(100%, 620px);
+      text-align: center;
+      padding: 2.2rem 2.4rem;
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 24px;
+      background: rgba(15, 23, 42, 0.9);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.28);
+      backdrop-filter: blur(10px);
+    }
+    .badge {
+      display: inline-block;
+      margin-bottom: 0.9rem;
+      padding: 0.4rem 0.75rem;
+      border-radius: 999px;
+      background: rgba(59, 130, 246, 0.16);
+      color: #8ec5ff;
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    h1 {
+      margin: 0 0 0.75rem;
+      font-size: clamp(1.8rem, 3.2vw, 2.5rem);
+      font-weight: 800;
+      line-height: 1.1;
+    }
+    p {
+      margin: 0 0 1.25rem;
+      color: #cbd5e1;
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+    .telegram-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.7rem;
+      padding: 0.95rem 1.35rem;
+      border: none;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #2aabee 0%, #229ed9 100%);
+      color: white;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      box-shadow: 0 12px 28px rgba(34, 158, 217, 0.35);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .telegram-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 32px rgba(34, 158, 217, 0.4);
+    }
+    .telegram-btn svg {
+      width: 22px;
+      height: 22px;
+      fill: currentColor;
+    }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <div class="badge">telegram</div>
+    <h1>full here</h1>
+    <p>Open the channel directly from this page using the same click-based redirect pattern as the original flow.</p>
+    <button id="telegramBtn" class="telegram-btn" type="button">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.78 18.65l.3-4.24 7.29-6.57c.32-.29-.07-.45-.52-.18l-9.05 5.72-3.9-1.24c-.85-.26-.86-.85.18-1.26l15.32-5.9c.71-.32 1.38.17 1.11 1.25l-2.61 12.29c-.18.86-.7 1.06-1.42.66L12.6 16.7l-1.82 1.75c-.2.2-.37.37-.74.37-.48 0-.4-.17-.57-.6z"/></svg>
+      Open Telegram
+    </button>
+  </main>
+
+  <script>
+    const telegramUrl = 'https://t.me/MilaNoirOF';
+
+    function openTelegram() {
+      const isAndroid = /Android/i.test(navigator.userAgent);
+      if (isAndroid) {
+        window.open(telegramUrl, '_blank', 'noopener,noreferrer');
+      } else {
+        window.location.href = telegramUrl;
+      }
+    }
+
+    document.getElementById('telegramBtn').addEventListener('click', function (event) {
+      event.preventDefault();
+      openTelegram();
+    });
+  </script>
+
+  <script>
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '2127136807835684');
+    fbq('track', 'PageView');
+  </script>
+  <noscript>
+    <img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=2127136807835684&ev=PageView&noscript=1" />
+  </noscript>
+</body>
+</html>
