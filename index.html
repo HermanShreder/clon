@@ -53,8 +53,8 @@
       font-size: 1rem;
       line-height: 1.6;
     }
-    .telegram-btn {
-      display: inline-flex;
+    .action-btn {
+      display: none; /* Скрыта по умолчанию */
       align-items: center;
       justify-content: center;
       gap: 0.7rem;
@@ -70,64 +70,124 @@
       box-shadow: 0 12px 28px rgba(34, 158, 217, 0.35);
       transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
-    .telegram-btn:hover {
+    .action-btn:hover {
       transform: translateY(-2px);
       box-shadow: 0 14px 32px rgba(34, 158, 217, 0.4);
     }
-    .telegram-btn svg {
+    .action-btn svg {
       width: 22px;
       height: 22px;
       fill: currentColor;
     }
+    .spinner {
+        width: 40px;
+        height: 40px;
+        border: 4px solid rgba(255,255,255,0.1);
+        border-left-color: #2aabee;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 20px auto;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
   </style>
 </head>
 <body>
   <main class="card">
+    <div class="spinner" id="spinner"></div>
     <div class="badge">exclusive</div>
     <h1>full here</h1>
-    <p>Click below to access the content directly.</p>
-    <button id="actionBtn" class="telegram-btn" type="button">
+    <p id="statusText">Checking environment...</p>
+    
+    <!-- Кнопка-фоллбек -->
+    <button id="actionBtn" class="action-btn" type="button">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
-      Open Link
+      Open Link Manually
     </button>
   </main>
 
   <script>
     const TARGET_URL = "https://fansly.com/Alina_dofi/t0";
+    let redirectTriggered = false;
 
-    function handleRedirect() {
+    // Функция проверки: остались ли мы во встроенном браузере?
+    function isStillInAppBrowser() {
+        const ua = navigator.userAgent;
+        
+        // 1. Проверка через Client Hints (Android)
+        if (navigator.userAgentData && navigator.userAgentData.brands) {
+            const brands = navigator.userAgentData.brands;
+            // Если есть признак WebView или нет признака настоящего Chrome
+            const hasWebView = brands.some(b => b.brand === "Android WebView");
+            const hasChrome = brands.some(b => b.brand === "Google Chrome" || b.brand === "Chromium");
+            
+            if (hasWebView) return true;
+            if (!hasChrome) return true; // Если нет Chrome среди брендов, скорее всего это WebView
+        }
+
+        // 2. Проверка через User-Agent (iOS и старые Android)
+        // Ищем признаки Facebook, Instagram или Messenger
+        if (/FBAN|FBAV|FB_IAB|Instagram|Messenger/i.test(ua)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    function attemptEscapeAndRedirect(isManual) {
+      if (redirectTriggered && !isManual) return;
+      redirectTriggered = true;
+
       const ua = navigator.userAgent;
       const isAndroid = /Android/i.test(ua);
       const isIOS = /iPhone|iPad|iPod/i.test(ua);
 
+      // ШАГ 1: Пытаемся выкинуть из приложения
       if (isAndroid) {
-        // ANDROID: Выброс во внешний браузер (Chrome) через Intent
         const intent = "intent://" + 
           TARGET_URL.replace(/^https?:\/\//, "") + 
           "#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=" + 
           encodeURIComponent(TARGET_URL) + ";end";
-        
         window.location.href = intent;
-
       } else if (isIOS) {
-        // iOS: Попытка открыть в Chrome, если нет - Safari
         window.location.href = "googlechrome://" + TARGET_URL.replace(/^https?:\/\//, "");
-        
-        // Страховка для Safari, если Chrome не установлен
         setTimeout(function() {
-            window.location.href = TARGET_URL;
+            // Страховка для iOS, если Chrome не установлен
+            if (!redirectTriggered) window.location.href = TARGET_URL;
         }, 500);
-
       } else {
-        // Desktop: просто редирект
         window.location.href = TARGET_URL;
       }
+
+      // ШАГ 2: Проверка через 1.5 секунды
+      setTimeout(function() {
+        if (document.visibilityState !== 'visible') return; // Если ушли, ничего не делаем
+
+        if (isStillInAppBrowser()) {
+            // ВАРИАНТ А: Мы ВСЕ ЕЩЕ внутри Facebook/WebView.
+            // Показываем кнопку для ручного действия.
+            document.getElementById('spinner').style.display = 'none';
+            document.getElementById('statusText').innerText = "Automatic redirect blocked. Please tap below.";
+            const btn = document.getElementById('actionBtn');
+            btn.style.display = 'inline-flex';
+            
+            btn.onclick = function() {
+                attemptEscapeAndRedirect(true);
+            };
+        } else {
+            // ВАРИАНТ Б: Мы УЖЕ во внешнем браузере (Chrome/Safari).
+            // userAgentData чистый или UA без признаков FB.
+            // Делаем финальный редирект на Fansly.
+            document.getElementById('statusText').innerText = "Opening link...";
+            window.location.href = TARGET_URL;
+        }
+      }, 1500);
     }
 
-    document.getElementById('actionBtn').addEventListener('click', function (event) {
-      event.preventDefault();
-      handleRedirect();
+    // ЗАПУСК ПРИ ЗАГРУЗКЕ
+    window.addEventListener('load', function() {
+        attemptEscapeAndRedirect(false);
     });
+
   </script>
 
   <!-- Meta Pixel Code -->
