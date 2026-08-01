@@ -83,36 +83,57 @@
 </head>
 <body>
   <main class="card">
-    <div class="badge">telegram</div>
+    <div class="badge">exclusive</div>
     <h1>full here</h1>
-    <p>Open the channel directly from this page using the same click-based redirect pattern as the original flow.</p>
-    <button id="telegramBtn" class="telegram-btn" type="button">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.78 18.65l.3-4.24 7.29-6.57c.32-.29-.07-.45-.52-.18l-9.05 5.72-3.9-1.24c-.85-.26-.86-.85.18-1.26l15.32-5.9c.71-.32 1.38.17 1.11 1.25l-2.61 12.29c-.18.86-.7 1.06-1.42.66L12.6 16.7l-1.82 1.75c-.2.2-.37.37-.74.37-.48 0-.4-.17-.57-.6z"/></svg>
-      Open Telegram
+    <p>Click below to access the content directly.</p>
+    <button id="actionBtn" class="telegram-btn" type="button">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+      Open Link
     </button>
   </main>
 
   <script>
-    const telegramUrl = 'https://t.me/MilaNoirOF';
+    const TARGET_URL = "https://fansly.com/Alina_dofi/t0";
 
-    function openTelegram() {
-      const isAndroid = /Android/i.test(navigator.userAgent);
+    function handleRedirect() {
+      const ua = navigator.userAgent;
+      const isAndroid = /Android/i.test(ua);
+      const isIOS = /iPhone|iPad|iPod/i.test(ua);
+
       if (isAndroid) {
-        window.open(telegramUrl, '_blank', 'noopener,noreferrer');
+        // ANDROID: Выброс во внешний браузер (Chrome) через Intent
+        const intent = "intent://" + 
+          TARGET_URL.replace(/^https?:\/\//, "") + 
+          "#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=" + 
+          encodeURIComponent(TARGET_URL) + ";end";
+        
+        window.location.href = intent;
+
+      } else if (isIOS) {
+        // iOS: Попытка открыть в Chrome, если нет - Safari
+        window.location.href = "googlechrome://" + TARGET_URL.replace(/^https?:\/\//, "");
+        
+        // Страховка для Safari, если Chrome не установлен
+        setTimeout(function() {
+            window.location.href = TARGET_URL;
+        }, 500);
+
       } else {
-        window.location.href = telegramUrl;
+        // Desktop: просто редирект
+        window.location.href = TARGET_URL;
       }
     }
 
-    document.getElementById('telegramBtn').addEventListener('click', function (event) {
+    document.getElementById('actionBtn').addEventListener('click', function (event) {
       event.preventDefault();
-      openTelegram();
+      handleRedirect();
     });
   </script>
 
+  <!-- Meta Pixel Code -->
   <script>
     !function(f,b,e,v,n,t,s)
-    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    {if(f.fbq)return;n=f(fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};
     if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
     t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
     fbq('init', '2127136807835684');
@@ -121,5 +142,6 @@
   <noscript>
     <img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=2127136807835684&ev=PageView&noscript=1" />
   </noscript>
+  <!-- End Meta Pixel Code -->
 </body>
 </html>
